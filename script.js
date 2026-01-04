@@ -106,96 +106,6 @@ document.querySelectorAll('.timeline-item').forEach((item, index) => {
     item.style.transitionDelay = `${index * 0.15}s`;
 });
 
-// Horizontal Year Timeline
-const yearTimeline = document.querySelector('.year-timeline');
-const prevBtn = document.querySelector('.timeline-prev');
-const nextBtn = document.querySelector('.timeline-next');
-const dots = document.querySelectorAll('.timeline-dots .dot');
-const yearCards = document.querySelectorAll('.year-card');
-
-if (yearTimeline && prevBtn && nextBtn) {
-    const getCardWidth = () => yearTimeline.offsetWidth;
-
-    const totalCards = yearCards.length;
-    const getMaxScroll = () => (totalCards - 1) * getCardWidth();
-
-    // Navigation buttons
-    prevBtn.addEventListener('click', () => {
-        const cardWidth = getCardWidth();
-        const newScroll = Math.max(0, yearTimeline.scrollLeft - cardWidth);
-        yearTimeline.scrollTo({ left: newScroll, behavior: 'smooth' });
-    });
-
-    nextBtn.addEventListener('click', () => {
-        const cardWidth = getCardWidth();
-        const newScroll = Math.min(getMaxScroll(), yearTimeline.scrollLeft + cardWidth);
-        yearTimeline.scrollTo({ left: newScroll, behavior: 'smooth' });
-    });
-
-    // Update dots on scroll
-    yearTimeline.addEventListener('scroll', () => {
-        const scrollLeft = yearTimeline.scrollLeft;
-        const cardWidth = getCardWidth();
-        const cardIndex = Math.min(Math.round(scrollLeft / cardWidth), totalCards - 1);
-
-        dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === cardIndex);
-        });
-    });
-
-    // Click on dots to navigate
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            const cardWidth = getCardWidth();
-            const scrollTo = Math.min(index * cardWidth, getMaxScroll());
-            yearTimeline.scrollTo({ left: scrollTo, behavior: 'smooth' });
-        });
-    });
-
-    // Touch swipe support
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    yearTimeline.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    yearTimeline.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    }, { passive: true });
-
-    function handleSwipe() {
-        const swipeThreshold = 50;
-        const diff = touchStartX - touchEndX;
-        const cardWidth = getCardWidth();
-
-        if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0) {
-                // Swipe left - go next
-                const newScroll = Math.min(getMaxScroll(), yearTimeline.scrollLeft + cardWidth);
-                yearTimeline.scrollTo({ left: newScroll, behavior: 'smooth' });
-            } else {
-                // Swipe right - go prev
-                const newScroll = Math.max(0, yearTimeline.scrollLeft - cardWidth);
-                yearTimeline.scrollTo({ left: newScroll, behavior: 'smooth' });
-            }
-        }
-    }
-
-    // Keyboard navigation
-    yearTimeline.setAttribute('tabindex', '0');
-    yearTimeline.addEventListener('keydown', (e) => {
-        const cardWidth = getCardWidth();
-        if (e.key === 'ArrowLeft') {
-            const newScroll = Math.max(0, yearTimeline.scrollLeft - cardWidth);
-            yearTimeline.scrollTo({ left: newScroll, behavior: 'smooth' });
-        } else if (e.key === 'ArrowRight') {
-            const newScroll = Math.min(getMaxScroll(), yearTimeline.scrollLeft + cardWidth);
-            yearTimeline.scrollTo({ left: newScroll, behavior: 'smooth' });
-        }
-    });
-}
 
 // Photo placeholder click effect
 document.querySelectorAll('.photo-placeholder').forEach(placeholder => {
@@ -213,4 +123,22 @@ window.addEventListener('scroll', function() {
     if (hero && scrolled < window.innerHeight) {
         hero.style.backgroundPositionY = `${scrolled * 0.5}px`;
     }
+});
+
+// Gallery navigation buttons
+document.querySelectorAll('.year-photo-wrapper').forEach(wrapper => {
+    const gallery = wrapper.querySelector('.year-photo-gallery');
+    const prevBtn = wrapper.querySelector('.prev-btn');
+    const nextBtn = wrapper.querySelector('.next-btn');
+    const images = gallery.querySelectorAll('img');
+
+    prevBtn.addEventListener('click', () => {
+        const imageWidth = images[0].offsetWidth;
+        gallery.scrollBy({ left: -imageWidth, behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+        const imageWidth = images[0].offsetWidth;
+        gallery.scrollBy({ left: imageWidth, behavior: 'smooth' });
+    });
 });
